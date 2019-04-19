@@ -3,6 +3,8 @@
 # https://github.com/Nyr/openvpn-install
 #
 # Copyright (c) 2013 Nyr. Released under the MIT License.
+# Copyright (c) 2019 BRataj. Released under the MIT License.
+
 
 
 # Detect Debian users running the script with "sh" instead of bash
@@ -71,7 +73,7 @@ if [[ -e /etc/openvpn/server.conf ]]; then
 			echo "Please, use one word only, no special characters."
 			read -p "Client name: " -e CLIENT
 			cd /etc/openvpn/easy-rsa/
-			EASYRSA_CERT_EXPIRE=3650 ./easyrsa build-client-full $CLIENT nopass
+			EASYRSA_CERT_EXPIRE=3650 ./easyrsa build-client-full $CLIENT
 			# Generates the custom client.ovpn
 			newclient "$CLIENT"
 			echo
@@ -208,8 +210,10 @@ else
 	read -p "DNS [1-5]: " -e -i 1 DNS
 	echo
 	echo "Finally, tell me your name for the client certificate."
-	echo "Please, use one word only, no special characters."
-	read -p "Client name: " -e -i client CLIENT
+	echo "I suggest call it a MASTER"
+	echo "This will be your RECOVERY CLIENT"
+	echo "Only this client will not have a password!" 
+	read -p "Client name: " -e -i MASTER CLIENT
 	echo
 	echo "Okay, that was all I needed. We are ready to set up your OpenVPN server now."
 	read -n1 -r -p "Press any key to continue..."
@@ -390,6 +394,7 @@ remote-cert-tls server
 auth SHA512
 cipher AES-256-CBC
 setenv opt block-outside-dns
+auth-nocache
 key-direction 1
 verb 3" > /etc/openvpn/client-common.txt
 	# Generates the custom client.ovpn
